@@ -1,4 +1,4 @@
-# ProductInights
+# ProductInsights
 A product review analyzer using AzureML
 
 Developed a product review analyzer that classifies reviews into positive or negative via sentiment analysis along with performing data analysis
