@@ -1,0 +1,163 @@
+﻿  
+@font-face {
+	font-family: 'chaparralproregular';
+	src: url('../fonts/chaparralproregular.eot');
+	src: local('chaparralproregular'), url('../fonts/chaparralproregular.woff') format('woff'), url('../fonts/chaparralproregular.ttf') format('truetype');
+}
+
+  
+@font-face {
+	font-family: 'brandongrotesque';
+	src: url('../fonts/brandongrotesque-regular.eot');
+	src: local('brandongrotesque-regular'), url('../fonts/brandongrotesque-regular.woff') format('woff'), url('../fonts/brandongrotesque-regular.ttf') format('truetype');
+}
+
+html, body {
+    min-height: 100%;
+    height: 100%;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.3) !important;
+
+}
+
+.navbar-brand {
+    font-size: 25pt !important;
+    font-family: 'Doppio One' !important;
+}
+/* Set padding to keep content from hitting the edges */
+.body-content {
+   
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+   
+}
+
+.navbar {
+    padding: 20px 0px 0px 20px;
+    height: 100px;
+    background: #3d4351;
+	z-index: 1000;
+    margin: 0 !important;
+}
+.navbar a  {
+   font-size: 14pt;
+   padding:20px;
+   font-family: 'brandongrotesque', sans-serif !important;
+   color: #eeeeee !important;
+   opacity: 0.5;
+   font-weight: 700;
+
+}
+
+.navbar a:hover {
+    background: inherit !important;
+    border-bottom: 3px solid #fff;
+    margin-top: -10px;
+    opacity: 1.0;
+}
+
+.navbar-brand {
+    font-size: 20pt;
+}
+.front {
+      font-family: 'brandongrotesque' !important;
+    padding: 80px;
+    min-height: 100%;
+	z-index: 1000; 
+    color: white;
+}
+
+.subHeader {
+    font-family: 'brandongrotesque' !important;
+    font-size: 13pt;
+    background-color:#8dc63f;
+    color: #EEEEEE;
+    min-height: 45px;
+    text-align: center;
+}
+
+video, video source {
+    width:100%;
+    opacity: 0.8;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+#loginForm {
+    font-size: 13pt;
+}
+
+
+
+#loginForm input {
+  border: none;
+  font-family: 'Open Sans', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5em;
+  padding: 10px;
+  -webkit-appearance: none;
+}
+
+#loginForm h2 {
+           font-family: 'brandongrotesque' !important;
+ 
+    font-weight: 700;
+}
+
+
+.front form input[type="submit"] {
+  background: #80b636;
+  border: 0;
+  width: 100%;
+  height: 40px;
+  border-radius: 3px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+#SignUpText {
+    font-size: 12pt;
+
+}
+
+.front input[type=text], input[type=password] {
+       background: none repeat scroll 0% 0% rgba(255, 255, 255, 0.85) !important;
+       padding: 10px;
+
+}
+
+html, .fill {
+    min-height: 100%;
+    height: 100%;
+}
+
+.homepage h1 {
+    color: #fafafa;
+    font-size: 50pt;
+    font-weight: 700;
+    line-height: 0.8;
+}
+
+h1.logo i {
+    padding: 7px;
+}
+h1.logo {
+    margin-top: 0px;
+    font-size: 30pt;
+    font-weight: 700;
+    color: #eeeeee;
+}

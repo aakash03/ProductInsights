@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <style>
+
+        @Html.Raw("@font-face {   font-family: 'chaparralproregular';    src: url('./chaparralproregular.eot');	        src: local('chaparralproregular'), url('./chaparralproregular.woff') format('woff'), url('./chaparralproregular.ttf') format('truetype');       }");
+
+    </style>
+  @*  <link href='http://fonts.googleapis.com/css?family=Roboto+Slab' rel='stylesheet' type='text/css'>*@
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Styles.Render("~/Content/fontawesome/fa")
+
+
+   
+
+</head>
+<body class="fill">
+ 
+     <div class="navbar">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span style="background-color: black;" class="icon-bar"></span>
+                    <span style="background-color: black;" class="icon-bar"></span>
+                    <span style="background-color: black;" class="icon-bar"></span>
+                </button>
+                <h1 class="logo"><i class='fa fa-pie-chart'></i>ProductInsights </h1>
+            </div>
+            <div class="navbar-collapse nav collapse navbar-right">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                </ul>
+                @Html.Partial("_LoginPartial")
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid subHeader" style="padding: 12px;">
+            <p>With the increase of online reviews of hotels, restaurants and other companies in the service sector, it has never been more vital to be able to control what customers say about your business.</p>
+    </div>
+    <div class="body-content" style="height: 75%">
+        @RenderBody()
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @RenderSection("scripts", required: false)
+    <div class="video-container">
+        <div class="filter"></div>
+        <video autoplay loop class="fillWidth">
+            <source src="../Images/home-o.webm" type="video/webm" />Your browser does not support the video tag. I suggest you upgrade your browser.
+        </video>
+    </div>
+</body>
+</html>

@@ -1,0 +1,58 @@
+﻿@model ProductInsight.Models.Results
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Results</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.rev_id)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.rev_id)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.rep_score)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.rep_score)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.logisticsDept)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.logisticsDept)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.financeDept)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.financeDept)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.qualityDept)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.qualityDept)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

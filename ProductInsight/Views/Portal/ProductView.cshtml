@@ -1,0 +1,202 @@
+﻿@using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Identity.EntityFramework
+@using ProductInsight.Models
+@model InsightsModel
+@{
+    int MaxVal = 0;
+    var curUser = new ApplicationUser();
+    if (User.Identity.IsAuthenticated)
+    {
+        var userStore = new UserStore<ApplicationUser>(new ApplicationDbContext());
+        var manager = new UserManager<ApplicationUser>(userStore);
+        curUser = manager.FindById(User.Identity.GetUserId());
+    }
+}
+
+  
+    <div class="container-fluid">
+
+    <!-- Page Heading -->
+   
+    <!-- /.row -->
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-1" style="top: -30px">
+          <h1 class="score-circle" style="color: white; background: @Html.Raw( Model.score >= 2.5 ? "#2196F3" : "#F44336" )"> @Math.Round(Model.score,2)</h1>
+        </div>  
+        <div class="col-lg-4" onclick="HoldMe()">
+            <h1> &nbsp; &nbsp; ProductID: @Model.id </h1>
+        </div>         
+     </div>
+     <div class="row">
+         <div class="col-lg-10 col-lg-offset-2 center-block">
+             <div class="panel panel-primary">
+                 <div class="panel-heading">
+                     <h3 class="panel-title">Recent Review Post</h3>
+                 </div>
+             </div>
+                 @for (int i = 0; i < Math.Min(Model.RecentReview.Count(), 5); i++)
+                 {
+                    <div class="panel-body" style="padding: 10px">
+                        <h4><i class="fa fa-clock-o"></i>  @Model.RecentReview[i].timestamp</h4>
+                        <div class="alert @Html.Raw( Model.RecentReview[i].Status ? "alert-success" : "alert-danger" )">
+                            @Html.Raw(Model.RecentReview[i].reviewerText)
+                        </div>                
+                    </div>
+                 }
+                   
+         </div>
+     </div>
+        <div class="row">
+            <div class="col-lg-10">
+                <div class="panel panel-red">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><i class="fa fa-long-arrow-right"></i>Timeline</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="morris-line-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+      <div class="row">
+          <div class="col-lg-5">
+                  <div class="panel panel-yellow">
+                      <div class="panel-heading">
+                          <h3 class="panel-title"><i class="fa fa-long-arrow-right"></i>Review Analysis</h3>
+                      </div>
+                      <div class="panel-body">
+                          <div id="morris-donut-chart"></div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-lg-5">
+                  <div class="panel panel-green">
+                      <div class="panel-heading">
+                          <h3 class="panel-title"><i class="fa fa-long-arrow-right"></i> Department Classification</h3>
+                      </div>
+                      <div class="panel-body">
+                          <div class="flot-chart" style="height: 350px;">
+                              <div class="flot-chart-content" id="flot-pie-chart"></div>
+                          </div>
+                          
+                      </div>
+                  </div>
+              </div>
+       </div>
+
+        <div class="row">
+            <div class="col-lg-10">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><i class="fa fa-long-arrow-right"></i>Product Features</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="morris-bar-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+     <!-- /.row -->
+   
+    </div>
+
+<script type="text/javascript">
+        
+        var data = [{
+                label: "Finance",
+                data: @Model.FinanceDept.Count().ToString()
+                }, 
+                {
+                label: "Quality",
+                data: @Model.QualityDept.Count().ToString()
+                }, 
+                {
+                label: "Logistics",
+                data: @Model.LogisticDept.Count().ToString()
+                },
+                {
+                    label: "Other",
+                    data: 0
+                }];
+
+        $.plot($("#flot-pie-chart"), data, {
+            series: {
+                pie: {
+                    show: true
+                }
+            },
+            grid: {
+                hoverable: true
+            },
+            tooltip: true,
+            tooltipOpts: {
+                content: "%p.0%, %s", // show percentages, rounding to 2 decimal places
+                shifts: {
+                    x: 20,
+                    y: 0
+                },
+                defaultTheme: false
+            }
+        });
+    
+
+    Morris.Donut({
+        element: 'morris-donut-chart',
+        data: [{
+            label: "Postive Reviews",
+            value: @Model.positive
+        }, {
+            label: "Negative Reviews",
+            value: @Model.negative
+        }],
+        resize: true
+    });
+
+    Morris.Line({
+        // ID of the element in which to draw the chart.
+        element: 'morris-line-chart',
+        // Chart data records -- each entry in this array corresponds to a point on
+        // the chart.
+        data: [
+          @foreach (KeyValuePair<DateTime, int> p in Model.LineChart)
+          {
+               @Html.Raw("{ d:'" + p.Key.Date.ToString("yyyy-MM-dd") + "', Posts: " + p.Value + " }, ");
+               MaxVal = Math.Max(p.Value, MaxVal);
+          }
+        ],
+        // The name of the data record attribute that contains x-visitss.
+        xkey: 'd',
+        // A list of names of data record attributes that contain y-visitss.
+        ykeys: ['Posts'],
+        // Labels for the ykeys -- will be displayed when you hover over the
+        // chart.
+        labels: ['Posts'],
+        ymax: @MaxVal + 5,
+        parseTime: false,
+        // Disables line smoothing
+        smooth: false,
+        resize: true
+    });
+
+    Morris.Bar({
+        element: 'morris-bar-chart',
+        data: [
+        @foreach (InsightsModel.Pair p in Model.Features)
+            {
+                 @Html.Raw("{ feature:'" + (p.feature).Replace("'","") + "', Score: " + p.score + " }, ");
+            }
+        ],
+        xkey: 'feature',
+        ykeys: ['Score'],
+        labels: ['Score'],
+        barRatio: 0.4,
+        xLabelAngle: 80,
+        hideHover: 'auto',
+        resize: true
+    });
+
+</script>
+        <!-- /.container-fluid -->

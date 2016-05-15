@@ -1,0 +1,139 @@
+﻿@using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Identity.EntityFramework
+@using ProductInsight.Models
+@model OverviewModel
+@{
+
+    var curUser = new ApplicationUser();
+    if (User.Identity.IsAuthenticated)
+    {
+        var userStore = new UserStore<ApplicationUser>(new ApplicationDbContext());
+        var manager = new UserManager<ApplicationUser>(userStore);
+        curUser = manager.FindById(User.Identity.GetUserId());
+    }
+}
+
+  
+    <div class="container-fluid">
+
+    <!-- Page Heading -->
+   
+    <!-- /.row -->
+    <!-- /.row -->
+   <div class="row">
+         <div class="col-lg-12 center-block">
+             <div class="panel panel-primary">
+                 <div class="panel-heading">
+                     <h3 class="panel-title">Results</h3>
+                 </div>
+             </div>
+                 @for (int i = 0; i < Model.val.Count(); i++)
+                 {
+                    <div class="panel-body">
+                        <h4><i class="fa fa-clock-o"></i>  @Model.val[i].Review.timestamp</h4>
+                        <div class="col-lg-10">
+                            <div class="alert @Html.Raw( Model.val[i].Review.Status ? "alert-success" : "alert-danger" )">
+                                @Html.Raw(Model.val[i].Review.reviewerText)
+                            </div> 
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="well" style="padding: 2px 0px 2px 5px; font-size: 3pt;">
+                                <h6><b><i style="padding: 5px;" class="fa fa-cubes"></i>ProductID:</b> <strong>@Model.val[i].Review.productID</strong></h6>
+                                <h6><b><i style="padding: 5px;" class="fa fa-line-chart"></i>Score    : </b>  <strong>@Model.val[i].Result.rep_score.ToString("0.0###")</strong> </h6>
+                                <h6><b><i style="padding: 5px;" class="fa fa-pie-chart"></i>Rating   :</b>  <strong>@Model.val[i].Review.rating.ToString("0.0#")</strong> </h6>
+                                <h6><i style="padding: 5px;" class="fa fa-thumbs-o-up"></i>  <strong>@Model.val[i].Review.upvotes</strong> 
+                                    <i style="padding: 5px;"  class="fa fa-thumbs-o-down"></i>   <strong>@Model.val[i].Review.downvotes</strong>
+                                </h6>
+                            </div> 
+                        </div>          
+                    </div>
+                 }
+                   
+         </div>
+     </div>
+        
+
+      <div class="row">
+          <div class="col-lg-5">
+                  <div class="panel panel-yellow">
+                      <div class="panel-heading">
+                          <h3 class="panel-title"><i class="fa fa-long-arrow-right"></i>Review Analysis</h3>
+                      </div>
+                      <div class="panel-body">
+                          <div id="morris-donut-chart"></div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-lg-5">
+                  <div class="panel panel-green">
+                      <div class="panel-heading">
+                          <h3 class="panel-title"><i class="fa fa-long-arrow-right"></i> Department Classification</h3>
+                      </div>
+                      <div class="panel-body">
+                          <div class="flot-chart" style="height: 350px;">
+                              <div class="flot-chart-content" id="flot-pie-chart"></div>
+                          </div>
+                          
+                      </div>
+                  </div>
+              </div>
+       </div>
+        
+     <!-- /.row -->
+   
+    </div>
+
+<script type="text/javascript">
+        var data = [{
+                label: "Finance",
+                data: @Model.FinanceDept.Count().ToString()
+                }, 
+                {
+                label: "Quality",
+                data: @Model.QualityDept.Count().ToString()
+                }, 
+                {
+                label: "Logistics",
+                data: @Model.LogisticDept.Count().ToString()
+                },
+                {
+                    label: "Other",
+                    data: 0
+                }];
+
+        $.plot($("#flot-pie-chart"), data, {
+            series: {
+                pie: {
+                    show: true
+                }
+            },
+            grid: {
+                hoverable: true
+            },
+            tooltip: true,
+            tooltipOpts: {
+                content: "%p.0%, %s", // show percentages, rounding to 2 decimal places
+                shifts: {
+                    x: 20,
+                    y: 0
+                },
+                defaultTheme: false
+            }
+        });
+    
+
+    Morris.Donut({
+        element: 'morris-donut-chart',
+        data: [{
+            label: "Postive Reviews",
+            value: @Model.positive
+        }, {
+            label: "Negative Reviews",
+            value: @Model.negative
+        }],
+        resize: true
+    });
+
+  
+</script>
+        <!-- /.container-fluid -->

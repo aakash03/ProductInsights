@@ -1,0 +1,57 @@
+﻿@model IEnumerable<ProductInsight.Models.Results>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.rev_id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.rep_score)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.logisticsDept)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.financeDept)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.qualityDept)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.rev_id)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.rep_score)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.logisticsDept)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.financeDept)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.qualityDept)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.id }) |
+            @Html.ActionLink("Details", "Details", new { id=item.id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.id })
+        </td>
+    </tr>
+}
+
+</table>

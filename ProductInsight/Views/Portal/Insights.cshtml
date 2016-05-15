@@ -1,0 +1,94 @@
+﻿@using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Identity.EntityFramework
+@using ProductInsight.Models
+@model SettingsModel
+@{
+
+    var curUser = new ApplicationUser();
+    if (User.Identity.IsAuthenticated)
+    {
+        var userStore = new UserStore<ApplicationUser>(new ApplicationDbContext());
+        var manager = new UserManager<ApplicationUser>(userStore);
+        curUser = manager.FindById(User.Identity.GetUserId());
+    }
+    Layout = "~/Views/Portal/_Layout.cshtml";
+}
+
+    <div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">
+                Insights
+            </h1>
+            <ol class="breadcrumb">
+                <li>
+                    <i class="fa fa-dashboard"></i>  <a href='@Url.Action("Index","Portal")'>Dashboard</a>
+                </li>
+                <li class="active">
+                    <i class="fa fa-edit"></i> Insights
+                </li>
+            </ol>
+        </div>
+    </div>
+    <!-- /.row -->
+    <!-- /.row -->
+    <div class="row">
+      <div class="col-lg-12">
+          <div class="form-group form-inline">
+              <label>Enter ProductID: &nbsp;</label>
+              <input id="SearchProduct" class="form-control">
+              <input type="submit" id="btnGo" value="Go" class="btn btn-primary" />  
+              <img src="../Images/loading.gif" id="gifloader" class="loading hidden" />
+          </div>
+
+      </div>
+     </div>
+     <!-- /.row -->
+        <div class="row" id="ProductInsights">
+            <div class="alert-info alert alert-dismissible" role="alert">
+                There are no results to display. Enter a product ID in the textbox above and hit Go!
+            </div>
+       </div>
+   
+    </div>
+   
+
+    <script>
+        var getUrlParameter = function getUrlParameter(sParam) {
+            var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : sParameterName[1];
+                }
+            }
+        };
+
+        $(function () {
+            var id = getUrlParameter('ID');
+            if (id != undefined) {
+                $("#SearchProduct").val(id);
+                $('#btnGo').trigger("click");
+            }
+        });
+
+        var url = '@Url.Action("DisplayInsights", "Portal")';
+        $('#btnGo').click(function () {
+            $("#gifloader").removeClass("hidden");
+            $("#btnGo").addClass("hidden");
+
+            var keyWord = $('#SearchProduct').val();
+            $('#ProductInsights').load(url, { id: keyWord }, function () {
+                $("#gifloader").addClass("hidden");
+                $("#btnGo").removeClass("hidden");
+            });
+        });
+    </script>
+        <!-- /.container-fluid -->

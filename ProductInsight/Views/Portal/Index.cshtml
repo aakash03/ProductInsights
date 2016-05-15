@@ -1,0 +1,242 @@
+﻿@using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Identity.EntityFramework
+@using ProductInsight.Models
+@model DashboardModel
+@{
+    int MaxVal = 0;
+    var curUser = new ApplicationUser();
+    if (User.Identity.IsAuthenticated)
+    {
+        var userStore = new UserStore<ApplicationUser>(new ApplicationDbContext());
+        var manager = new UserManager<ApplicationUser>(userStore);
+        curUser = manager.FindById(User.Identity.GetUserId());
+    }
+    Layout = "~/Views/Portal/_Layout.cshtml";
+}
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">
+                    Dashboard <small>Statistics Overview</small>
+                </h1>
+                <ol class="breadcrumb">
+                    <li class="active">
+                        <i class="fa fa-dashboard"></i> Dashboard
+                    </li>
+                </ol>
+            </div>
+        </div>
+        <!-- /.row -->
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="alert alert-info alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <i class="fa fa-info-circle"></i>  <strong>Welcome back, @curUser.FirstName!</strong> We have collected new data for you!
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-comments fa-5x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">@Model.Reviews</div>
+                                <div>Total Reviews</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href='@(Url.Action("Insights", "Portal"))'>
+                        <div class="panel-footer">
+                            <span class="pull-left">View Details</span>
+                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                            <div class="clearfix"></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="panel panel-yellow">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-tasks fa-5x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">@Model.Products</div>
+                                <div>Total Products</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href='@(Url.Action("Insights", "Portal"))'>
+                        <div class="panel-footer">
+                            <span class="pull-left">View Details</span>
+                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                            <div class="clearfix"></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="panel panel-green">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-shopping-cart fa-5x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">@Model.Positive</div>
+                                <div>Positive Reviews</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href='@(Url.Action("Overview", "Portal"))'>
+                        <div class="panel-footer">
+                            <span class="pull-left">View Details</span>
+                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                            <div class="clearfix"></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="panel panel-red">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-support fa-5x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">@Model.Negative</div>
+                                <div>Negative Reviews</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href='@(Url.Action("Overview", "Portal"))'>
+                        <div class="panel-footer">
+                            <span class="pull-left">View Details</span>
+                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                            <div class="clearfix"></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i>Timeline</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="morris-area-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><i class="fa fa-long-arrow-right fa-fw"></i>Department</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="morris-donut-chart"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><i class="fa fa-clock-o fa-fw"></i>Top Rated Products</h3>
+                    </div>
+                    <div class="hidden">@Model.ProductList.OrderByDescending(x => x.score)</div>
+                    <div class="panel-body">
+                        <div class="list-group">
+                          @for (int i = 0; i < Math.Min(8, Model.ProductList.Count()); i++)
+                          {
+                            <a href='@(Url.Action("Insights", "Portal"))?ID=@Model.ProductList[i].pID' class="list-group-item">
+                                <span class="badge">@Model.ProductList[i].score</span>
+                                <i class="fa fa-fw fa-calendar"></i> ProductID: @Model.ProductList[i].pID
+                            </a>
+                          }
+                       </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><i class="fa fa-clock-o fa-fw"></i>Low Rated Products</h3>
+                    </div>
+                    <div class="hidden">@{ Model.ProductList = Model.ProductList.OrderBy(x => x.score).ToList(); }</div>
+                    <div class="panel-body">
+                        <div class="list-group">
+                            @for (int i = 0; i < Math.Min(8, Model.ProductList.Count()); i++)
+                            {
+                                <a href='@(Url.Action("Insights", "Portal"))?ID=@Model.ProductList[i].pID' class="list-group-item">
+                                    <span class="badge">@Model.ProductList[i].score</span>
+                                    <i class="fa fa-fw fa-calendar"></i> ProductID: @Model.ProductList[i].pID
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+
+    </div>
+
+@Scripts.Render("~/Scripts/Portal/flot/flotjs")
+@Scripts.Render("~/Scripts/Portal/morris/morris")
+    <!-- /.container-fluid -->
+    <script type="text/javascript">
+        Morris.Donut({
+            element: 'morris-donut-chart',
+            data: [{
+                label: "Logistics",
+                value: @Model.LogisticDept
+            }, {
+                label: "Finance",
+                value: @Model.FinanceDept
+            }, {
+                label: "Quality",
+                value: @Model.QualityDept
+            }],
+            resize: true
+        });
+
+        Morris.Area({
+            element: 'morris-area-chart',
+            data: [
+                 @foreach (KeyValuePair<DateTime, int> p in Model.AreaChart)
+                    {
+                      @Html.Raw("{ period:'" + p.Key.Date.ToString("yyyy-MM-dd") + "', Posts: " + p.Value + " }, ");
+                      MaxVal = Math.Max(MaxVal, p.Value);
+                    }
+            ],
+            xkey: 'period',
+            ykeys: ['Posts'],
+            labels: ['Posts'],
+            pointSize: 2,
+            ymax: @MaxVal+3,
+            continuousLine: true,
+            parseTime: false,
+            hideHover: 'auto',
+            resize: true
+        });
+    </script>

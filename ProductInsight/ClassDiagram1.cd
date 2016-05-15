@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ProductInsight.Models.ReviewDBContext">
+    <Position X="3.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAA=</HashCode>
+      <FileName>Models\Reviews.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProductInsight.Models.ReviewText">
+    <Position X="8.25" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAIAAAgAAAAAAAAAAAAAAAAAQAQQAgA=</HashCode>
+      <FileName>Models\ReviewText.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProductInsight.Models.AzuremlDBContext">
+    <Position X="5.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\ReviewText.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProductInsight.Models.Reviews">
+    <Position X="1.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAABAEABAAAAAACAAAAQAAAwAAgAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Models\Reviews.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

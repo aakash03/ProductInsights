@@ -1,0 +1,99 @@
+﻿@using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Identity.EntityFramework
+@using ProductInsight.Models
+@model SettingsModel
+@{
+
+    var curUser = new ApplicationUser();
+    if (User.Identity.IsAuthenticated)
+    {
+        var userStore = new UserStore<ApplicationUser>(new ApplicationDbContext());
+        var manager = new UserManager<ApplicationUser>(userStore);
+        curUser = manager.FindById(User.Identity.GetUserId());
+    }
+    Layout = "~/Views/Portal/_Layout.cshtml";
+}
+
+    <div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">
+                Settings
+            </h1>
+            <ol class="breadcrumb">
+                <li>
+                    <i class="fa fa-dashboard"></i>  <a href='@Url.Action("Index","Portal")'>Dashboard</a>
+                </li>
+                <li class="active">
+                    <i class="fa fa-edit"></i> Settings
+                </li>
+            </ol>
+        </div>
+    </div>
+    <!-- /.row -->
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-6">
+          @using (Html.BeginForm("Settings", "Portal", FormMethod.Post, new { role = "form" }))
+          {
+                @Html.AntiForgeryToken()
+    <b> @Html.ValidationSummary(true, "", new { @class = "text-success" })</b>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.User.FirstName)
+                    @Html.TextBoxFor(m => m.User.FirstName, new { @class = "form-control", @placeholder = "Enter First Name" })
+                    @Html.ValidationMessageFor(m => m.User.FirstName, "", new { @class = "text-danger", @value = "@curUser.FirstName" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.User.LastName)
+                    @Html.TextBoxFor(m => m.User.LastName, new { @class = "form-control", @placeholder = "Enter Last Name" })
+                    @Html.ValidationMessageFor(m => m.User.LastName, "", new { @class = "text-danger", @value = "@curUser.LastName" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.User.Phone)
+                    @Html.TextBoxFor(m => m.User.Phone, new { @class = "form-control", @placeholder = "Enter Phone Number" })
+                    @Html.ValidationMessageFor(m => m.User.Phone, "", new { @class = "text-danger", @value = "@curUser.Phone" })
+                </div>
+
+
+                <div class="form-group">             
+                    <input type="submit" value="Save" class="btn btn-primary" />                  
+                </div>
+          }
+           
+
+            <br/>
+            @using (Html.BeginForm("Settings", "Portal", FormMethod.Post, new { role = "form" }))
+            {
+                @Html.AntiForgeryToken()
+         
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Pass.OldPassword)
+                    @Html.PasswordFor(m => m.Pass.OldPassword, new { @class = "form-control", @placeholder = "Enter Current Password" })
+                    @Html.ValidationMessageFor(m => m.Pass.OldPassword, "", new { @class = "text-danger", @value = "@curUser.FirstName" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Pass.NewPassword)
+                    @Html.PasswordFor(m => m.Pass.NewPassword, new { @class = "form-control", @placeholder = "Enter New Password" })
+                    @Html.ValidationMessageFor(m => m.Pass.NewPassword, "", new { @class = "text-danger", @value = "@curUser.FirstName" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Pass.ConfirmPassword)
+                    @Html.PasswordFor(m => m.Pass.ConfirmPassword, new { @class = "form-control", @placeholder = "Confirm Password" })
+                    @Html.ValidationMessageFor(m => m.Pass.ConfirmPassword, "", new { @class = "text-danger", @value = "@curUser.FirstName" })
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Change Password" class="btn btn-primary" />
+                </div>
+            }
+
+      </div>
+     <!-- /.row -->
+   
+        </div>
+    </div>
+        <!-- /.container-fluid -->
