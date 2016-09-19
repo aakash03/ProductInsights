@@ -8,18 +8,20 @@ using System.Web;
 using System.Web.Mvc;
 using ProductInsight.Models;
 using System.IO;
-using System.Text;using Microsoft.AspNet.Identity;
+using System.Text;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-
+using System.Web.Helpers;
+using Newtonsoft.Json;
 namespace ProductInsight.Controllers
 {
     public class ReviewsController : Controller
     {
         private AzureDBContext AzureDB = new AzureDBContext();
-       private ApplicationDbContext UserDB = new ApplicationDbContext();
+        private ApplicationDbContext UserDB = new ApplicationDbContext();
 
         // GET: Reviews
         public ActionResult Index()
@@ -27,127 +29,127 @@ namespace ProductInsight.Controllers
             return View(AzureDB.ReviewSet.ToList());
         }
 
-             
+
         [HttpPost]
         [AllowAnonymous]
-        public async Task<ActionResult> ReviewPost( Reviews obj )
+        public async Task<ActionResult> ReviewPost(Reviews obj)
         {
-             
-                if (!ModelState.IsValid)
-                {
-                    ViewBag.message = "502 Bad Request";
-                    return View();
-                }
 
-                string ipaddr = System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
-                var User = UserDB.Users.Where(x => x.ApiToken == obj.AuthToken && x.ServerIP == ipaddr );
-                if( User.Count() == 0 ) {
-                    ViewBag.message = "Request not Validated";
-                    return View();
-                } 
-                
-
-                obj.id = AzureDB.ReviewSet.Count() + 1;
-                obj.timestamp = DateTime.Now;
-          
-                AzureDB.ReviewSet.Add(obj);
-                AzureDB.SaveChanges();
-
-                StreamReader istr = new StreamReader(Server.MapPath("~/App_Data/_stopWords.csv"));
-                String pstr = istr.ReadToEnd();
-
-                var arr = pstr.Split(',');
-
-                string punc = "(){}[]^%#$@!*,/;\"?&-";
-                string z = "";
-
-                for (int i = 0; i < obj.reviewerText.Length; i++)
-                    if (!punc.Contains(obj.reviewerText[i]))
-                        z += obj.reviewerText[i];
-
-                var rev = z.Split(' ');
-                //foreach (string a in arr)
-                //  System.Diagnostics.Debug.Write(a);
-
-                string reviewText = "";
-
-                foreach (string s in rev)
-                {
-                    var w = s.ToLower();
-                    if (!arr.Contains(w))
-                        reviewText += w + " ";
-                }
-
-
-                string content = "Review,id,upvotes,downvotes,Rating" + Environment.NewLine;
-                content += "\"" + reviewText + "\"," + obj.id.ToString() + "," + obj.upvotes.ToString() + "," + obj.downvotes.ToString() + "," + obj.rating.ToString();
-
-                using (var client = new HttpClient())
-                {
-                    var scoreRequest = new
-                    {
-                        GlobalParameters = new Dictionary<string, string>() {
-                         { "Data", content },
-                        }
-                    };
-                    const string apiKey = "LJwSdl3I0yjg2IF3huyob0iTxFbj6Bawh8q80v5NRFX1DOafg7mSxnjHOZmmzGkphmHbyw3HzZX7Z8AcEo0ZZg=="; // Replace this with the API key for the web service
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue( "Bearer", apiKey);
-
-                    client.BaseAddress = new Uri("https://ussouthcentral.services.azureml.net/workspaces/d32c324a164e4554a4a48632e36b5466/services/eeb11fcf45e54160a7501d471a94b0c4/execute?api-version=2.0&details=true");
-        
-                    HttpResponseMessage response = await client.PostAsJsonAsync("", scoreRequest);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        string result = await response.Content.ReadAsStringAsync();
-                        ViewBag.message = String.Format("Result: {0}", result);
-                    }
-                    else
-                    {
-                        ViewBag.message = string.Format("The request failed with status code: {0}", response.StatusCode);
-                        ViewBag.message += Environment.NewLine;
-                        // Print the headers - they include the requert ID and the timestamp, which are useful for debugging the failure
-                        ViewBag.message += response.Headers.ToString();
-                        ViewBag.message += Environment.NewLine;
-                        string responseContent = await response.Content.ReadAsStringAsync();
-                        ViewBag.message = (responseContent);
-                    }
-                }
-
-
-                using (var client = new HttpClient())
-                {
-                    var scoreRequest = new
-                    {
-                        GlobalParameters = new Dictionary<string, string>() {
-                            { "Database query", "select AuthToken,productID,reviewerText from ReviewsDetails where  (productID = 0 and AuthToken = '#FFFF') or (productID = " + obj.productID + " and AuthToken = '" + obj.AuthToken +"');" },
-                        }
-                    };
-                    const string apiKey = "PaIIMjwndjj5k/0gEFd9ImHMlkDWRYLe/mMoZ1V91MXKTXzLxDh2GSk+EamlWBs/377H4i047pN6KiLaMC8sbA=="; // Replace this with the API key for the web service
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
-
-                    client.BaseAddress = new Uri("https://ussouthcentral.services.azureml.net/workspaces/d32c324a164e4554a4a48632e36b5466/services/5deceb5dce37449b954d222fcb704a69/execute?api-version=2.0&details=true");
-
-                    HttpResponseMessage response = await client.PostAsJsonAsync("", scoreRequest);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        string result = await response.Content.ReadAsStringAsync();
-                        ViewBag.message += String.Format("Result: {0}", result);
-                    }
-                    else
-                    {
-                        ViewBag.message += (string.Format("The request failed with status code: {0}", response.StatusCode));
-
-                        // Print the headers - they include the requert ID and the timestamp, which are useful for debugging the failure
-                        ViewBag.message += (response.Headers.ToString());
-
-                        string responseContent = await response.Content.ReadAsStringAsync();
-                        ViewBag.message += (responseContent);
-                    }
-                }
-         
+            if (!ModelState.IsValid)
+            {
+                ViewBag.message = "502 Bad Request";
                 return View();
+            }
+
+            string ipaddr = System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
+            if (ipaddr == "::1")
+                ipaddr = "127.0.0.1";
+
+            var User = UserDB.Users.Where(x => x.ApiToken == obj.AuthToken && x.ServerIP == ipaddr);
+            if (User.Count() == 0)
+            {
+                ViewBag.message = "Request not Validated";
+                return View();
+            }
+
+
+            obj.id = AzureDB.ReviewSet.Count() + 1;
+            obj.timestamp = DateTime.Now;
+
+            AzureDB.ReviewSet.Add(obj);
+            AzureDB.SaveChanges();
+
+            StreamReader istr = new StreamReader(Server.MapPath("~/App_Data/_stopWords.csv"));
+            String pstr = istr.ReadToEnd();
+
+            var arr = pstr.Split(',');
+
+            string punc = "(){}[]^%#$@!*,/;\"?&-";
+            string z = "";
+
+            for (int i = 0; i < obj.reviewerText.Length; i++)
+                if (!punc.Contains(obj.reviewerText[i]))
+                    z += obj.reviewerText[i];
+
+            var rev = z.Split(' ');
+            //foreach (string a in arr)
+            //  System.Diagnostics.Debug.Write(a);
+
+            string reviewText = "";
+
+            foreach (string s in rev)
+            {
+                var w = s.ToLower();
+                if (!arr.Contains(w))
+                    reviewText += w + " ";
+            }
+
+            reviewText = "\"" + reviewText + "\"";
+
+            var httpRequest = (HttpWebRequest)WebRequest.Create("http://example.com/mypage/");
+            httpRequest.Method = "POST";
+            httpRequest.ContentType = "application/x-www-form-urlencoded";
+            httpRequest.Accept = "application/json";
+
+            //string postData = "id=" + obj.id.ToString() + "&userID=" + obj.userID + "&reviewID=" + obj.reviewID 
+            //+ "&productID=" + obj.productID + "&rating=" + obj.rating.ToString() + "&reviewText=" + reviewText;
+            //    byte[] dataArray = Encoding.UTF8.GetBytes(postData);
+
+            //    httpRequest.ContentLength = dataArray.Length;
+
+            //    using (Stream requestStream = httpRequest.GetRequestStream())  {
+            //        requestStream.Write(dataArray, 0, dataArray.Length);
+            //        var webResponse = (HttpWebResponse)httpRequest.GetResponse();
+            //    Stream r = webResponse.GetResponseStream();
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://192.168.11.125:5000");
+                var content = new FormUrlEncodedContent(new[]
+                {
+                new KeyValuePair<string, string>("id", obj.id.ToString()),
+                new KeyValuePair<string, string>("userID", obj.userID),
+                new KeyValuePair<string, string>("reviewID", obj.reviewID),
+                new KeyValuePair<string, string>("productID", obj.productID),
+                new KeyValuePair<string, string>("rating", obj.rating.ToString()),
+                new KeyValuePair<string, string>("reviewText", reviewText)
+            });
+                var result = client.PostAsync("/Review/", content).Result;
+                string resultContent = result.Content.ReadAsStringAsync().Result;
+
+
+                Results res = JsonConvert.DeserializeObject<Results>(resultContent);
+                res.id = AzureDB.ResultSet.Count() + 1;
+
+                AzureDB.ResultSet.Add(res);
+            }
+
+            var reviews = AzureDB.ReviewSet.Where(x => x.AuthToken == obj.AuthToken && x.productID == obj.productID).ToList();
+            string jsonReviews = JsonConvert.SerializeObject(reviews);
+
+            var c = new HttpClient();
+            var resourceAddress = new Uri("http://192.168.11.125:5000/TFIDF/");
+            c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            HttpResponseMessage wcfResponse = await c.PostAsync(resourceAddress, new StringContent(jsonReviews, Encoding.UTF8, "application/json"));
+
+            string ResultContent = wcfResponse.Content.ReadAsStringAsync().Result;
+
+            var features = AzureDB.FeatureSet.Where(x => x.AuthToken == obj.AuthToken && x.ProductID == obj.productID);
+            foreach (Features feature in features)
+            {
+                AzureDB.FeatureSet.Remove(feature);
+            }
+
+            Features feat = JsonConvert.DeserializeObject<Features>(ResultContent);
+
+
+            feat.AuthToken = obj.AuthToken;
+            feat.ProductID = obj.productID;
+            AzureDB.FeatureSet.Add(feat);
+
+            AzureDB.SaveChanges();
+
+            return View();
 
         }
 
@@ -169,7 +171,7 @@ namespace ProductInsight.Controllers
                 {
                     ViewBag.message = "Request not Validated";
                     return View();
-                } 
+                }
 
                 string reviewID = model.reviewID;
                 string productID = model.productID;
@@ -177,7 +179,7 @@ namespace ProductInsight.Controllers
                 int downvotes = model.downvotes;
 
 
-                var update = AzureDB.ReviewSet.Where(x => x.reviewID == reviewID && x.productID == productID && x.AuthToken == model.AuthToken );
+                var update = AzureDB.ReviewSet.Where(x => x.reviewID == reviewID && x.productID == productID && x.AuthToken == model.AuthToken);
                 if (update.Count() == 0)
                 {
                     ViewBag.message = "Invalid ReviewID or ProductID";
